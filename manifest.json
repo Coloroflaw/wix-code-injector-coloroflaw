@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Wix Code Injector", 
+  "version": "1.0",
+  "description": "Inject code into Wix Editor or Wix Site",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "https://api.gemini.com/*" 
+  ],
+  "background": {
+    "service_worker": "background.service.js"
+  },
+  "action": {
+    "default_popup": "popup.html" 
+  }
+}
