@@ -1,18 +1,28 @@
 {
   "manifest_version": 3,
-  "name": "Wix Code Injector", 
+  "name": "Wix Code Injector",
   "version": "1.0",
   "description": "Inject code into Wix Editor or Wix Site",
   "permissions": [
     "activeTab",
     "scripting",
     "storage",
-    "https://api.gemini.com/*" 
+    "https://api.gemini.com/*"
+  ],
+  "host_permissions": [
+    "https://*.wixsite.com/*",
+    "https://editor.wix.com/*"
   ],
   "background": {
-    "service_worker": "background.service.js"
+    "service_worker": "background.js" // Renamed for clarity
   },
   "action": {
-    "default_popup": "popup.html" 
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "icons": {  // Add your icons
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
