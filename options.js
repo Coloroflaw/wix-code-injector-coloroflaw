@@ -1,5 +1,4 @@
 // options.js
-
 document.addEventListener('DOMContentLoaded', () => {
     loadApiKey(); // Load the saved API key when the page loads
 
