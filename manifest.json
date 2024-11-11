@@ -1,8 +1,9 @@
+// manifest.json
 {
   "manifest_version": 3,
   "name": "Wix Code Injector",
   "version": "1.0",
-  "description": "Inject code into Wix Editor or Wix Site",
+  "description": "Inject code into Wix Editor or Wix Site (with Gemini integration)",
   "permissions": [
     "activeTab",
     "scripting",
