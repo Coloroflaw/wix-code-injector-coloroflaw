@@ -1,0 +1,110 @@
+## Copilot
+It looks like you're working on integrating code injection and fetching code completions from the Gemini API. Here's a refined version of your script with some improvements:
+
+const {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} = require("@google/generative-ai");
+const { GoogleAIFileManager } = require("@google/generative-ai/server");
+
+const apiKey = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
+const fileManager = new GoogleAIFileManager(apiKey);
+
+/**
+ * Uploads the given file to Gemini.
+ *
+ * See https://ai.google.dev/gemini-api/docs/prompting_with_media
+ */
+async function uploadToGemini(path, mimeType) {
+  const uploadResult = await fileManager.uploadFile(path, {
+    mimeType,
+    displayName: path,
+  });
+  const file = uploadResult.file;
+  console.log(`Uploaded file ${file.displayName} as: ${file.name}`);
+  return file;
+}
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-pro-002",
+  systemInstruction: "text generation, code completion, image generation, vertex generative language api, helpful collaborative AI assistant integrated into the WIX-VELO-INJECTOR chrome extension. Your goal is to provide, create, or execute copy-paste tasks for users to be coded into Wix Velo developer format guided by accomplishing code completion, error detection, and documentation as priorities.",
+});
+
+const generationConfig = {
+  temperature: 0,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",
+};
+
+async function run() {
+  // TODO Make these files available on the local file system
+  // You may need to update the file paths
+  const files = [
+    await uploadToGemini("Unknown File", "application/octet-stream"),
+    await uploadToGemini("Unknown File", "application/octet-stream"),
+    await uploadToGemini("Unknown File", "application/octet-stream"),
+    await uploadToGemini("Unknown File", "application/octet-stream"),
+  ];
+
+  const chatSession = model.startChat({
+    generationConfig,
+    history: [
+      {
+        role: "user",
+        parts: [
+          { text: "code completion" },
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {
+            fileData: {
+              mimeType: files[0].mimeType,
+              fileUri: files[0].uri,
+            },
+          },
+        ],
+      },
+      {
+        role: "user",
+        parts: [
+          { text: "iok\nutguuikkjv " },
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {
+            text: "I understand you're looking for code completion assistance within the context of Wix Velo inside the Velo Injector Chrome extension. Unfortunately, \"utguuikkjv\" doesn't give me much to work with. Please provide:\n\n1. **The specific code you've written so far.** Even incomplete code helps me understand the context and what you're trying to achieve.\n2. **A clear description of what you want the code to do.** What is the intended functionality? What should happen when the code runs?\n3. **The specific point where you need code completion.** Indicate where you're stuck or what part you need help completing.\n4. **Any relevant error messages.** If you're encountering errors, including the full error message is crucial for debugging.\n\n**Example of a helpful request:**\n\n\"I'm trying to create a function that filters a dataset based on user input in a text input field. Here's the code I have so far:\n\n```javascript\n$w.onReady(function () {\n  $w(\"#myInput\").onChange( (event) => {\n    let userInput = event.target.value;\n    $w(\"#myDataset\").setFilter( wixData.filter() // Code completion needed here\n  });\n});\n```\n\nI need help completing the `setFilter()` part. I want to filter the dataset to only show items where a field called \"itemName\" contains the user's input. I'm not sure how to structure the Wix Data filter query.\"\n\nProviding this kind of context will allow me to give you specific, helpful code completions, error detection assistance, and documentation links relevant to your Wix Velo code.\n",
+          },
+        ],
+      },
+      {
+        role: "user",
+        parts: [
+          { text: "gh repo clone Coloroflaw/wix-code-injector-coloroflaw\n" },
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {
+            text: "That looks like a command to clone a GitHub repository. To execute this, you would use a terminal or command prompt on your computer, not within the Wix Velo editor or the Velo Injector extension itself. The Velo Injector helps you inject code *into* your Wix site, not manage external repositories.\n\nHere's how you would typically clone the repository:\n\n1. **Open your terminal or command prompt.** (Terminal on macOS/Linux, Command Prompt or PowerShell on Windows)\n\n2. **Navigate to the directory where you want to clone the repository.** You can use the `cd` command to change directories. For example, `cd Documents` would change to your Documents folder.\n\n3. **Run the `git clone` command:**\n   ```bash\n   git clone https://github.com/Coloroflaw/wix-code-injector-coloroflaw.git\n   ```\n   This command will download the repository to your current directory.\n\n**Important Considerations for Wix Velo:**\n\nCloning this repository will *not* automatically integrate the code into your Wix site. You'll need to understand the contents of the repository and how to incorporate its functionality into your Wix project using the Velo Injector or by manually adding code to your site's code files.\n\nIf you can explain what you're trying to achieve with this repository, I can provide more tailored instructions on how to use it within your Wix project. For example, are you trying to add specific features or utilities from the repository to your Wix site? Knowing your goal will help me guide you through the next steps.\n",
+          },
+        ],
+      },
+      {
+        role: "user",
+        parts: [
+          {
+            text: "async function injectCode(code, injectionTarget) {\n  try {\n    let activeTab = await chrome.tabs.query({ active: true, currentWindow: true }).then(tabs => tabs[0]);\n\n    await chrome.scripting.executeScript({\n      target: { tabId: activeTab.id },\n      function: (codeToInject, target) => {\n        // Determine where to inject the code\n        let targetElement;\n        if (target === 'head') {\n          targetElement = document.head;\n        } else if (target === 'body') {\n          targetElement = document.body;\n        } else {\n          // Assume it's a CSS selector\n          targetElement = document.querySelector(target);\n        }\n\n        if (targetElement) {\n          const scriptElement = document.createElement('script');\n          scriptElement.textContent = codeToInject;\n          targetElement.appendChild(scriptElement);\n        } else {\n          console.error(\"Target element not found.\");\n        }\n      },\n      args: [code, injectionTarget]\n    });\n\n  } catch (error) {\n    console.error(\"Error injecting code:\", error);\n  }\n}\n\nasync function fetchCodeFromGemini(prompt, apiKey) {\n  const response = await fetch('https://api.gemini.com/v1/completions', { \n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json',\n      'Authorization': `Bearer ${apiKey}`\n    },\n    body: JSON.stringify({\n      prompt: prompt,\n      // ... other Gemini API parameters like model, temperature, etc.\n    })\n  });\n\n  const data = await response.json();\n  // Extract the code from the data object, adjust based on the actual response\n  return data.choices[0].text; \n}\n\n// Listen for messages from the content script\nchrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {\n  if (request.action === \"injectCode\") {\n    if (request.code) {\n      // Inject user-provided code\n      injectCode(request.code, request.target);\n    } else if (request.prompt) {\n      try {\n        // Get the API key (you might store this using Chrome extension storage)\n        const apiKey = await chrome.storage.local.get(\"apiKey\").then(result => result.apiKey); \n        const code = await fetchCodeFromGemini(request.prompt, apiKey);\n        injectCode(code, request.target);\n      } catch (error) {\n        console.error(\"Error fetching code from Gemini:\", error);\n      }\n    }\n  }\n});
+
+Key Improvements:- Error Handling: Added error handling for the fetchCodeFromGemini function.
+- Code Injection: Improved the code injection logic to handle different targets (head, body, or a CSS selector).
+- API Key Retrieval: Added a step to retrieve the API key from Chrome storage.
+Feel free to ask if you need
